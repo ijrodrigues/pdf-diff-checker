@@ -85,8 +85,8 @@
 
 .dz-content { text-align: center; }
 .dz-title { font-weight: 700; margin-bottom: 6px; }
-.dz-sub { color: var(--muted); font-size: 12px; }
-.dz-file { margin-top: 8px; color: var(--accent-2); font-size: 12px; }
+.dz-sub { color: var(--muted); font-size: 14px; }
+.dz-file { margin-top: 8px; color: var(--accent-2); font-size: 15px; }
 
 .metrics {
   display: grid;

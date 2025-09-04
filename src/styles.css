@@ -1,1 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global resets and base theme background to remove white border */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #0b0f17; /* match app background */
+  color: #e5e7eb;
+}
+
+/* Ensure root app fills the viewport */
+app-root {
+  display: block;
+  min-height: 100vh;
+}
