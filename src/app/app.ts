@@ -9,7 +9,7 @@ GlobalWorkerOptions.workerSrc = 'assets/pdfjs/pdf.worker.min.mjs';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './home.html',
-  styleUrl: './app.css',
+  styleUrls: ['./app.css'],
 })
 export class App {
   constructor(private cdr: ChangeDetectorRef) {}
