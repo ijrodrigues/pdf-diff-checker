@@ -2,7 +2,6 @@ import { Component, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 
-// Configure pdf.js worker from local assets (no external requests)
 GlobalWorkerOptions.workerSrc = 'assets/pdfjs/pdf.worker.min.mjs';
 
 @Component({
