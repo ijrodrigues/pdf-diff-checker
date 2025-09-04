@@ -28,6 +28,7 @@ export class App {
   maxPages = 0;
 
   pixelSimilarity = 0; // percentage
+  textSimilarity = 0; // percentage
 
   private leftDoc: any = null;
   private rightDoc: any = null;
@@ -61,6 +62,7 @@ export class App {
     this.currentPage = 1;
     this.maxPages = 0;
     this.pixelSimilarity = 0;
+    this.textSimilarity = 0;
     this.leftDoc = null;
     this.rightDoc = null;
   }
@@ -87,9 +89,17 @@ export class App {
     await this.waitForViewReady();
     await this.renderCurrentPage();
 
-    // Compute pixel similarity across all pages (may take time)
-    this.pixelSimilarity = await this.computePixelSimilarityAllPages();
+    // Compute both similarities across all pages
+    const [pixel, text] = await Promise.all([
+      this.computePixelSimilarityAllPages(),
+      this.computeTextSimilarityAllPages(),
+    ]);
+    this.pixelSimilarity = pixel;
+    this.textSimilarity = text;
+
     this.hasResults = true;
+    // Force view update so the metrics section appears immediately under zoneless CD
+    this.cdr.detectChanges();
   }
 
   async prevPage() {
@@ -285,6 +295,37 @@ export class App {
     return Math.max(0, Math.min(100, similarity));
   }
 
+  private async computeTextSimilarityAllPages(): Promise<number> {
+    let commonCount = 0;
+    let totalCount = 0;
+
+    for (let p = 1; p <= this.maxPages; p++) {
+      const lt = await this.extractPageText(this.leftDoc, p);
+      const rt = await this.extractPageText(this.rightDoc, p);
+      const lTokens = this.tokenize(lt);
+      const rTokens = this.tokenize(rt);
+      const lcs = this.lcsLength(lTokens, rTokens);
+      commonCount += lcs;
+      totalCount += lTokens.length + rTokens.length;
+    }
+
+    if (totalCount === 0) return 100;
+    const similarity = (2 * commonCount) / totalCount * 100;
+    return Math.max(0, Math.min(100, similarity));
+  }
+
+  private async extractPageText(doc: any, pageNum: number): Promise<string> {
+    const num = doc?.numPages || 0;
+    if (pageNum > num || pageNum < 1) return '';
+    const page = await doc.getPage(pageNum);
+    const content = await page.getTextContent();
+    const strings: string[] = [];
+    for (const item of content.items as any[]) {
+      const s = (item as any).str;
+      strings.push(s);
+    }
+    return strings.join(' ');
+  }
 
   private tokenize(text: string): string[] {
     return text
