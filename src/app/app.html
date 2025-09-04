@@ -1,114 +1,66 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<div class="app">
+  <header class="header">
+    <div class="brand">PDF Diff</div>
+    <div class="actions">
+      <button class="mode-btn" [class.active]="mode==='text'" (click)="setMode('text')">Texto</button>
+      <button class="mode-btn" [class.active]="mode==='image'" (click)="setMode('image')">Imagem</button>
+      <button class="compare-btn" [disabled]="!fileLeft || !fileRight" (click)="onCompare()">Comparar Arquivos</button>
+    </div>
+  </header>
 
-<style>
-  :host {
-    --bright-blue: oklch(51.01% 0.274 263.83);
-    --electric-violet: oklch(53.18% 0.28 296.97);
-    --french-violet: oklch(47.66% 0.246 305.88);
-    --vivid-pink: oklch(69.02% 0.277 332.77);
-    --hot-red: oklch(61.42% 0.238 15.34);
-    --orange-red: oklch(63.32% 0.24 31.68);
+  <section class="upload">
+    <div class="dropzone" [class.filled]="fileLeft" (dragover)="onDragOver($event)" (drop)="onDrop($event, 'left')" (click)="leftInput.click()">
+      <input #leftInput type="file" accept="application/pdf" (change)="onFileSelected($event, 'left')" hidden>
+      <div class="dz-content">
+        <div class="dz-title">Arquivo 1</div>
+        <div class="dz-sub">Arraste e solte aqui ou clique para selecionar</div>
+        <div class="dz-file" *ngIf="fileLeft">{{ fileLeft?.name }}</div>
+      </div>
+    </div>
+    <div class="dropzone" [class.filled]="fileRight" (dragover)="onDragOver($event)" (drop)="onDrop($event, 'right')" (click)="rightInput.click()">
+      <input #rightInput type="file" accept="application/pdf" (change)="onFileSelected($event, 'right')" hidden>
+      <div class="dz-content">
+        <div class="dz-title">Arquivo 2</div>
+        <div class="dz-sub">Arraste e solte aqui ou clique para selecionar</div>
+        <div class="dz-file" *ngIf="fileRight">{{ fileRight?.name }}</div>
+      </div>
+    </div>
+  </section>
 
-    --gray-900: oklch(19.37% 0.006 300.98);
-    --gray-700: oklch(36.98% 0.014 302.71);
-    --gray-400: oklch(70.9% 0.015 304.04);
+  <section class="metrics" *ngIf="hasResults">
+    <div class="metric">
+      <div class="label">Similaridade de Texto</div>
+      <div class="value">{{ textSimilarity | number: '1.0-2' }}%</div>
+    </div>
+    <div class="metric">
+      <div class="label">Similaridade de Pixels</div>
+      <div class="value">{{ pixelSimilarity | number: '1.0-2' }}%</div>
+    </div>
+  </section>
 
-    --red-to-pink-to-purple-vertical-gradient: linear-gradient(
-      180deg,
-      var(--orange-red) 0%,
-      var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
-
-    --red-to-pink-to-purple-horizontal-gradient: linear-gradient(
-      90deg,
-      var(--orange-red) 0%,
-      var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
-
-    --pill-accent: var(--bright-blue);
-
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1 {
-    font-size: 3.125rem;
-    color: var(--gray-900);
-    font-weight: 500;
-    line-height: 100%;
-    letter-spacing: -0.125rem;
-    margin: 0;
-    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-  }
-
-  p {
-    margin: 0;
-    color: var(--gray-700);
-  }
-
-  main {
-    width: 100%;
-    min-height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    box-sizing: inherit;
-    position: relative;
-  }
-
-  .angular-logo {
-    max-width: 9.2rem;
-  }
-
-  .content {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 700px;
-    margin-bottom: 3rem;
-  }
-
-  .content h1 {
-    margin-top: 1.75rem;
-  }
-
-  .content p {
-    margin-top: 1.5rem;
-  }
-
-  .divider {
-    width: 1px;
-    background: var(--red-to-pink-to-purple-vertical-gradient);
-    margin-inline: 0.5rem;
-  }
-
-  .pill-group {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    flex-wrap: wrap;
-    gap: 1.25rem;
-  }
-
-  .pill {
-    display: flex;
-    align-items: center;
+  <section class="viewer" *ngIf="readyToView">
+    <div class="pagebar" *ngIf="maxPages > 1">
+      <button (click)="prevPage()" [disabled]="currentPage<=1">←</button>
+      <span>Página {{ currentPage }} / {{ maxPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage>=maxPages">→</button>
+    </div>
+    <div class="panes">
+      <div class="pane">
+        <div class="pane-title">Arquivo 1</div>
+        <canvas *ngIf="mode==='image'" #leftCanvas class="pdf-canvas"></canvas>
+        <div *ngIf="mode==='text'" #leftText class="text-layer"></div>
+      </div>
+      <div class="pane">
+        <div class="pane-title">Arquivo 2</div>
+        <div class="canvas-stack" *ngIf="mode==='image'">
+          <canvas #rightCanvas class="pdf-canvas"></canvas>
+          <canvas #diffCanvas class="diff-overlay"></canvas>
+        </div>
+        <div *ngIf="mode==='text'" #rightText class="text-layer"></div>
+      </div>
+    </div>
+  </section>
+</div>
     --pill-accent: var(--bright-blue);
     background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
     color: var(--pill-accent);
@@ -230,7 +182,7 @@
           <clipPath id="a"><path fill="#fff" d="M0 0h982v239H0z" /></clipPath>
         </defs>
       </svg>
-      <h1>Hello, {{ title() }}</h1>
+      <h1>Hello</h1>
       <p>Congratulations! Your app is running. 🎉</p>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>

@@ -1,0 +1,55 @@
+<div class="app">
+  <header class="header">
+    <div class="brand">PDF Diff</div>
+    <div class="actions">
+      <button class="compare-btn" [disabled]="!fileLeft || !fileRight" (click)="onCompare()">Comparar Arquivos</button>
+    </div>
+  </header>
+
+  <section class="upload">
+    <div class="dropzone" [class.filled]="fileLeft" (dragover)="onDragOver($event)" (drop)="onDrop($event, 'left')" (click)="leftInput.click()">
+      <input #leftInput type="file" accept="application/pdf" (change)="onFileSelected($event, 'left')" hidden>
+      <div class="dz-content">
+        <div class="dz-title">Arquivo 1</div>
+        <div class="dz-sub">Arraste e solte aqui ou clique para selecionar</div>
+        <div class="dz-file" *ngIf="fileLeft">{{ fileLeft?.name }}</div>
+      </div>
+    </div>
+    <div class="dropzone" [class.filled]="fileRight" (dragover)="onDragOver($event)" (drop)="onDrop($event, 'right')" (click)="rightInput.click()">
+      <input #rightInput type="file" accept="application/pdf" (change)="onFileSelected($event, 'right')" hidden>
+      <div class="dz-content">
+        <div class="dz-title">Arquivo 2</div>
+        <div class="dz-sub">Arraste e solte aqui ou clique para selecionar</div>
+        <div class="dz-file" *ngIf="fileRight">{{ fileRight?.name }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="metrics" *ngIf="hasResults">
+    <div class="metric">
+      <div class="label">Similaridade de Pixels</div>
+      <div class="value">{{ pixelSimilarity | number: '1.0-2' }}%</div>
+    </div>
+  </section>
+
+  <section class="viewer" *ngIf="readyToView">
+    <div class="pagebar" *ngIf="maxPages > 1">
+      <button (click)="prevPage()" [disabled]="currentPage<=1">←</button>
+      <span>Página {{ currentPage }} / {{ maxPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage>=maxPages">→</button>
+    </div>
+    <div class="panes">
+      <div class="pane">
+        <div class="pane-title">Arquivo 1</div>
+        <canvas #leftCanvas class="pdf-canvas"></canvas>
+      </div>
+      <div class="pane">
+        <div class="pane-title">Arquivo 2</div>
+        <div class="canvas-stack">
+          <canvas #rightCanvas class="pdf-canvas"></canvas>
+          <canvas #diffCanvas class="diff-overlay"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
