@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 
@@ -13,6 +13,7 @@ GlobalWorkerOptions.workerSrc = 'assets/pdfjs/pdf.worker.min.mjs';
   styleUrl: './app.css',
 })
 export class App {
+  constructor(private cdr: ChangeDetectorRef) {}
   // Template references for current-page rendering
   @ViewChild('leftCanvas') leftCanvasRef?: ElementRef<HTMLCanvasElement>;
   @ViewChild('rightCanvas') rightCanvasRef?: ElementRef<HTMLCanvasElement>;
@@ -79,6 +80,9 @@ export class App {
 
     this.maxPages = Math.max(this.leftDoc.numPages || 0, this.rightDoc.numPages || 0);
     this.readyToView = true;
+
+    // Trigger view update so canvases are created before waiting for ViewChilds
+    this.cdr.detectChanges();
 
     // Ensure canvases exist before first render to avoid double-click behavior
     await this.waitForViewReady();
