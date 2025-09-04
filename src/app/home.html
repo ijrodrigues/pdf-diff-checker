@@ -12,7 +12,7 @@
       <div class="dz-content">
         <div class="dz-title">Arquivo 1</div>
         <div class="dz-sub">Arraste e solte aqui ou clique para selecionar</div>
-        <div class="dz-file" *ngIf="fileLeft">{{ fileLeft?.name }}</div>
+        <div class="dz-file" *ngIf="fileLeft">{{ fileLeft.name }}</div>
       </div>
     </div>
     <div class="dropzone" [class.filled]="fileRight" (dragover)="onDragOver($event)" (drop)="onDrop($event, 'right')" (click)="rightInput.click()">
@@ -20,7 +20,7 @@
       <div class="dz-content">
         <div class="dz-title">Arquivo 2</div>
         <div class="dz-sub">Arraste e solte aqui ou clique para selecionar</div>
-        <div class="dz-file" *ngIf="fileRight">{{ fileRight?.name }}</div>
+        <div class="dz-file" *ngIf="fileRight">{{ fileRight.name }}</div>
       </div>
     </div>
   </section>

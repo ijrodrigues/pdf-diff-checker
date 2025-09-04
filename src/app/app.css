@@ -51,6 +51,7 @@
   border-radius: 10px;
   cursor: pointer;
   transition: all .15s ease;
+  font-size: 20px;
 }
 
 .actions .mode-btn:hover { background: #0f1523; }
@@ -85,8 +86,8 @@
 
 .dz-content { text-align: center; }
 .dz-title { font-weight: 700; margin-bottom: 6px; }
-.dz-sub { color: var(--muted); font-size: 14px; }
-.dz-file { margin-top: 8px; color: var(--accent-2); font-size: 15px; }
+.dz-sub { color: var(--muted); font-size: 18px; }
+.dz-file { margin-top: 8px; color: var(--accent-2); font-size: 20px; }
 
 .metrics {
   display: grid;
